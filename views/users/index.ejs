@@ -105,12 +105,9 @@
   </div>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-  $(document).ready(() => {
-          var socket = io();
-          socket.on('generated notification', notificationString => {
-          // show the notification
-          var notification = new Notification('Notification' : {title: 'notificationString',});
-          }
+
+  var socket = io();
+
     $(document).on('click','.btn-destroy',function(){
                 var id = $(this).data('id');
                 $('#delete').attr('data-id', '');
@@ -119,9 +116,14 @@
 
             $(document).on('click','#delete',function(){
                 var id = $(this).data('id');
+                socket.emit('notification', id);
                 $('#submit-form-'+id).submit();
             });
-  });
+
+            socket.on('notification', function(id){
+              $('#notifications').append($('<li>').text(id));
+            });
+
   </script>
 <!-- END Modal -->
 <% include ../layouts/footer.ejs%>

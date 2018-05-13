@@ -52,16 +52,18 @@ mongoose.connect('mongodb://localhost/crud')
   .then(() => console.log('Berhasil terhubung dengan MongoDB'))
   .catch((err) => console.error(err));
 
-
-var socketIO = require('socket.io');
-var socketIOHelper = require('socket.io-helper/socketio.js');
-var PORT = process.env.PORT || 8088;
-
-var server = app.listen(function() {
-  console.log('Listening');
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+io.on('connection', function(socket){
+    socket.on('notification', function(msg){
+      io.emit('notification', msg);
+    });
+    socket.on('disconnect', function(){
+      console.log('user disconnected');
+    });
 });
-var io = socketIO(server);
-socketIOHelper.set(io);
-var receivers = require('socket.io-receiver/receiver.js');
-receivers.receivers(io);
+
+http.listen(3000, function(){
+    console.log('listening on *:3000');
+  });
 module.exports = app;
